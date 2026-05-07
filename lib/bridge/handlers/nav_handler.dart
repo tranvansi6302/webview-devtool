@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../bridge_manager.dart';
 import '../bridge_constants.dart';
+import '../../screens/miniapp_screen.dart';
 
 class SetNavigationBarHandler implements BridgeMethodHandler {
   final Function(String) onTitleChanged;
@@ -27,26 +28,31 @@ class SetNavigationBarHandler implements BridgeMethodHandler {
   String get methodName => 'setNavigationBar';
 
   @override
-  Future<dynamic> handle(BuildContext context, Map<String, dynamic> params) async {
+  Future<dynamic> handle(
+    BuildContext context,
+    Map<String, dynamic> params,
+  ) async {
     if (params.containsKey('title')) {
       onTitleChanged(params['title']);
     }
     if (params.containsKey('backgroundColor')) {
       final String colorStr = params['backgroundColor'];
       onBgColorStrChanged(colorStr);
-      
+
       // Chỉ parse và gọi callback Color nếu là mã Hex hợp lệ
       if (colorStr.startsWith('#')) {
         onBgColorChanged(_parseColor(colorStr));
       } else {
         // Nếu là Gradient, gửi màu mặc định hoặc giữ nguyên màu cũ để tránh crash
         // Lưu ý: màu này chỉ dùng làm fallback cho các phần chưa hỗ trợ Gradient
-        onBgColorChanged(Colors.indigo); 
+        onBgColorChanged(Colors.indigo);
       }
     }
     if (params.containsKey('frontColor')) {
       final String colorStr = params['frontColor'];
-      onTextColorChanged(colorStr.toLowerCase() == '#ffffff' ? Colors.white : Colors.black);
+      onTextColorChanged(
+        colorStr.toLowerCase() == '#ffffff' ? Colors.white : Colors.black,
+      );
     }
     if (params.containsKey('visible')) {
       onVisibleChanged(params['visible']);
@@ -72,7 +78,10 @@ class OpenDeeplinkHandler implements BridgeMethodHandler {
   String get methodName => 'openDeeplink';
 
   @override
-  Future<dynamic> handle(BuildContext context, Map<String, dynamic> params) async {
+  Future<dynamic> handle(
+    BuildContext context,
+    Map<String, dynamic> params,
+  ) async {
     final String urlStr = params['url'] ?? '';
     final Uri url = Uri.parse(urlStr);
 
@@ -80,12 +89,15 @@ class OpenDeeplinkHandler implements BridgeMethodHandler {
     if (urlStr.startsWith('ejsc://')) {
       final String displayTitle = params['title'] ?? 'Native Screen';
       final String? description = params['description'] ?? params['desc'];
-      
+
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: Colors.indigo,
-          title: Text(displayTitle, style: const TextStyle(color: Colors.white)),
+          title: Text(
+            displayTitle,
+            style: const TextStyle(color: Colors.white),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -130,19 +142,25 @@ class OpenPublicDeepLinkHandler implements BridgeMethodHandler {
   String get methodName => 'openPublicDeepLink';
 
   @override
-  Future<dynamic> handle(BuildContext context, Map<String, dynamic> params) async {
+  Future<dynamic> handle(
+    BuildContext context,
+    Map<String, dynamic> params,
+  ) async {
     final String urlStr = params['url'] ?? '';
     final bool inApp = params['inAppBrowser'] ?? true;
     final Uri url = Uri.parse(urlStr);
-    
+
     try {
       await launchUrl(
-        url, 
-        mode: inApp ? LaunchMode.inAppWebView : LaunchMode.externalApplication
+        url,
+        mode: inApp ? LaunchMode.inAppWebView : LaunchMode.externalApplication,
       );
       return {'success': true};
     } catch (e) {
-      throw BridgeException(BridgeError.internalError, params['errorMessage'] ?? 'Không thể mở liên kết: $urlStr');
+      throw BridgeException(
+        BridgeError.internalError,
+        params['errorMessage'] ?? 'Không thể mở liên kết: $urlStr',
+      );
     }
   }
 }
@@ -152,16 +170,47 @@ class ShareAppHandler implements BridgeMethodHandler {
   String get methodName => 'shareApp';
 
   @override
-  Future<dynamic> handle(BuildContext context, Map<String, dynamic> params) async {
+  Future<dynamic> handle(
+    BuildContext context,
+    Map<String, dynamic> params,
+  ) async {
     final String title = params['title'] ?? 'Chia sẻ';
     final String desc = params['desc'] ?? params['description'] ?? '';
     final String url = params['url'] ?? params['path'] ?? '';
-    
+
     String shareContent = title;
     if (desc.isNotEmpty) shareContent += '\n$desc';
     if (url.isNotEmpty) shareContent += '\nLink: $url';
-    
+
     await Share.share(shareContent);
+    return {'success': true};
+  }
+}
+
+class OpenNativeWindowHandler implements BridgeMethodHandler {
+  @override
+  String get methodName => 'openNativeWindow';
+
+  @override
+  Future<dynamic> handle(
+    BuildContext context,
+    Map<String, dynamic> params,
+  ) async {
+    final String url = params['url'] ?? '';
+    final String? title = params['title'];
+    final bool? showAppBar = params['showAppBar'];
+
+    if (url.isEmpty) throw 'URL is required';
+
+    // Mở màn hình mới đè lên màn hình hiện tại
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            MiniAppWebView(url: url, title: title, showAppBar: showAppBar),
+      ),
+    );
+
     return {'success': true};
   }
 }

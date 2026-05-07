@@ -38,7 +38,9 @@ import 'package:flutter/material.dart';
  */
 class MiniAppWebView extends StatefulWidget {
   final String url;
-  const MiniAppWebView({super.key, required this.url});
+  final String? title;
+  final bool? showAppBar;
+  const MiniAppWebView({super.key, required this.url, this.title, this.showAppBar});
 
   @override
   State<MiniAppWebView> createState() => _MiniAppWebViewState();
@@ -54,9 +56,9 @@ class _MiniAppWebViewState extends State<MiniAppWebView>
   String _errorMessage = '';
 
   // Trạng thái cấu hình Navigation Bar
-  bool _showAppBar = true;
+  late bool _showAppBar;
   bool _isImmersive = false;
-  String _appBarTitle = 'EJSC DevTool';
+  late String _appBarTitle;
   Color _appBarBgColor = const Color(0xFF5856D6);
   String _appBarBgColorStr = '#5856d6';
   Color _appBarTextColor = Colors.white;
@@ -75,6 +77,8 @@ class _MiniAppWebViewState extends State<MiniAppWebView>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _showAppBar = widget.showAppBar ?? false;
+    _appBarTitle = widget.title ?? '';
     _initWebView();
     _initBridge();
     _connectNavSync();
@@ -228,8 +232,8 @@ class _MiniAppWebViewState extends State<MiniAppWebView>
     _bridgeManager.register(LoadingHandler());
     _bridgeManager.register(HideLoadingHandler());
     _bridgeManager.register(RequestHandler());
-    _bridgeManager.register(OpenDeeplinkHandler());
     _bridgeManager.register(OpenPublicDeepLinkHandler());
+    _bridgeManager.register(OpenNativeWindowHandler());
     _bridgeManager.register(ShareAppHandler());
     _bridgeManager.register(GetUserInfoHandler());
     _bridgeManager.register(GetAuthCodeHandler());
@@ -348,7 +352,7 @@ class _MiniAppWebViewState extends State<MiniAppWebView>
 
     return Scaffold(
       extendBodyBehindAppBar: _isImmersive,
-      appBar: _showAppBar ? _buildAppBar() : null,
+      appBar: (_showAppBar && !_isLoading) ? _buildAppBar() : null,
       body: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) async {

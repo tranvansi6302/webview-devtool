@@ -60,7 +60,7 @@ class BridgeInjector {
           'removeStorage', 'clearStorage', 'getStorageInfo', 
           'setClipboard', 'getClipboard', 
           'showToast', 'alert', 'confirm', 'prompt', 'showActionSheet', 'showLoading', 'hideLoading', 
-          'request', 'openInAppBrowser', 'triggerHapticFeedback',
+          'request', 'openInAppBrowser', 'triggerHapticFeedback', 'openNativeWindow',
           'setNavigationBar', 'getUserInfo', 'getAuthCode', 
           'downloadFile', 'uploadFile', 'makePhoneCall', 'choosePhoneContact', 
           'addCalendarEvent', 'openDeeplink', 'openPublicDeepLink', 
