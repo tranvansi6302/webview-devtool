@@ -32,6 +32,7 @@ Tất cả các API được gọi qua SDK đều trả về một đối tượ
 |                    | [`triggerHapticFeedback`](#triggerhapticfeedback)  | Tạo rung phản hồi vật lý.           |
 | **Nav**      | [`openDeeplink`](#opendeeplink)                    | Mở màn hình nội bộ Super App.       |
 |                    | [`openPublicDeepLink`](#openpublicdeeplink)        | Mở liên kết URL bên ngoài.          |
+|                    | [`openNativeWindow`](#opennativewindow)            | Mở màn hình mới đè lên hiện tại.    |
 |                    | [`shareApp`](#shareapp)                            | Chia sẻ Mini App.                       |
 |                    | [`openInAppBrowser`](#openinappbrowser)            | Mở trình duyệt web trong app.         |
 | **Media**    | [`chooseImage`](#chooseimage--choosemedia)         | Chọn/Chụp ảnh từ thiết bị.         |
@@ -169,6 +170,19 @@ Tất cả các API được gọi qua SDK đều trả về một đối tượ
 
 - **Mô tả**: Mở liên kết URL bên ngoài.
 - **Tham số (Input)**: `url`, `inAppBrowser`.
+- **Kết quả trả về (Output)**:
+
+```json
+{"success": true, "data": {}}
+```
+
+#### `openNativeWindow`
+
+- **Mô tả**: Mở một màn hình WebView mới đè lên màn hình hiện tại (Push view).
+- **Tham số (Input)**: 
+  - `url`: Đường dẫn Mini App hoặc Web cần mở (Bắt buộc).
+  - `title`: Tiêu đề hiển thị trên thanh điều hướng.
+  - `showAppBar`: `true` để hiển thị App Bar, `false` để ẩn.
 - **Kết quả trả về (Output)**:
 
 ```json
