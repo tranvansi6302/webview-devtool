@@ -1,4 +1,4 @@
-# EJSC WebView Bridge - Hướng dẫn Nhà phát triển (Official SDK)
+# EJSC WebView Bridge
 
 Tài liệu đặc tả hệ thống **Bridge API** chuẩn hóa giữa Flutter (Native) và WebView (Mini App).
 
