@@ -139,6 +139,7 @@ class _MiniAppWebViewState extends State<MiniAppWebView>
 
     // Gửi log từ Native về máy tính qua WebSocket nếu đang kết nối
     NativeLogger.onLog = (msg) {
+      // 1. Gửi về PC (đã có)
       if (_navSyncWs?.readyState == WebSocket.open) {
         _navSyncWs!.add(
           jsonEncode({
@@ -150,6 +151,11 @@ class _MiniAppWebViewState extends State<MiniAppWebView>
           }),
         );
       }
+
+      // 2. Đẩy trực tiếp vào WebView để Web có thể hiển thị trên Layout (mới)
+      _controller.runJavaScript(
+        "console.log('[Native]', ${jsonEncode(msg)}); window.dispatchEvent(new CustomEvent('onNativeLog', { detail: ${jsonEncode(msg)} }));"
+      );
     };
   }
 
