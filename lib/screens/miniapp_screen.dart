@@ -351,6 +351,7 @@ class _MiniAppWebViewState extends State<MiniAppWebView>
     );
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: _isImmersive,
       appBar: (_showAppBar && !_isLoading) ? _buildAppBar() : null,
       body: PopScope(
